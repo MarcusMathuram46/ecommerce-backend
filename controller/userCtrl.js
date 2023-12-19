@@ -5,7 +5,7 @@ const validateMongoDbId = require("../utils/validateMongodbId");
 const { generateRefreshToken } = require("../config/refreshtoken");
 const jwt = require("jsonwebtoken");
 
-// create a User
+// Create a User
 const createUser = asyncHandler(async (req, res) => {
     const email = req.body.email;
     const findUser = await User.findOne({ email: email });
@@ -19,6 +19,7 @@ const createUser = asyncHandler(async (req, res) => {
     }
 });
 
+//  login for User
 const loginUserCtrl = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
@@ -63,7 +64,7 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
     }
 });
 
-// handle a refresh token
+// Handle a Refresh Token
 
 const handleRefreshToken = asyncHandler(async (req, res) => {
     const cookie = req.cookies;
@@ -80,7 +81,7 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
     });
 });
 
-// logout functionality 
+// Logout Functionality 
 
 const logout = asyncHandler(async (req, res) => {
     const cookie = req.cookies;
@@ -104,7 +105,7 @@ const logout = asyncHandler(async (req, res) => {
     res.sendStatus(204); // forbidden 
 });
 
-// Update a user
+// Update a User
 
 const updatedUser = asyncHandler(async (req, res) => {
     const { _id } = req.user;
@@ -126,7 +127,7 @@ const updatedUser = asyncHandler(async (req, res) => {
 
 });
 
-// Get all users
+// Get all Users
 
 const getallUser = asyncHandler(async (req, res) => {
     try {
@@ -153,7 +154,7 @@ const getaUser = asyncHandler(async (req, res) => {
     }
 })
 
-// Delete a user
+// Delete a User
 
 const deleteaUser = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -169,7 +170,7 @@ const deleteaUser = asyncHandler(async (req, res) => {
     }
 })
 
-// Block a user
+// Block a User
 
 const blockUser = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -191,7 +192,7 @@ const blockUser = asyncHandler(async (req, res) => {
     }
   });
 
-// Unblock a user
+// Unblock a User
 
 const unblockUser = asyncHandler(async (req, res) => {
     const { id } = req.params;
