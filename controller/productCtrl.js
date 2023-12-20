@@ -1,4 +1,5 @@
 const Product = require("../models/productModel");
+const User = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 
@@ -107,4 +108,88 @@ const getAllProduct = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { createProduct, getaProduct, getAllProduct, updateProduct, deleteProduct};
+// Wishlist Functionality
+
+const addToWishlist = asyncHandler(async(req, res) => {
+    const { _id } = req.user;
+    const { prodId } = req.body;
+    try {
+        const user = await User.findById(_id);
+        const alreadyadded = user.wishlist.find((id) => id.toString() === prodId);
+        if (alreadyadded) {
+            let user = await User.findByIdAndUpdate(_id, {
+                $pull: {wishlist: prodId},
+            },
+            {
+                new: true,
+            });
+            res.json(user);
+        } else {
+            let user = await User.findByIdAndUpdate(_id, {
+                $push: {wishlist: prodId},
+            },
+            {
+                new: true,
+            });
+            res.json(user);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+// Total Ratings
+
+const rating = asyncHandler(async (req, res) => {
+    const { _id } = req.user || {};
+    const { star, prodId, comment } = req.body;
+  
+    try {
+      const product = await Product.findById(prodId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+  
+      const alreadyRated = product.ratings.find(
+        (rating) =>
+          rating.postedby && rating.postedby.toString() === (_id && _id.toString())
+      );
+  
+      if (alreadyRated) {
+        // Update the existing rating's star and comment
+        alreadyRated.star = star;
+        alreadyRated.comment = comment;
+        await product.save();
+      } else {
+        // Add a new rating if the user hasn't rated the product yet
+        product.ratings.push({
+          star: star,
+          comment: comment,
+          postedby: _id,
+        });
+        await product.save();
+      }
+  
+      const updatedProduct = await Product.findById(prodId);
+      if (!updatedProduct) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+  
+      const totalRating = updatedProduct.ratings.length;
+      const ratingsum = updatedProduct.ratings.reduce((acc, item) => acc + item.star, 0);
+      const actualRating = totalRating > 0 ? Math.round(ratingsum / totalRating) : 0;
+  
+      updatedProduct.totalrating = actualRating;
+      await updatedProduct.save();
+  
+      res.json(updatedProduct);
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  });
+  
+  
+
+
+
+module.exports = { createProduct, getaProduct, getAllProduct, updateProduct, deleteProduct, addToWishlist, rating };
