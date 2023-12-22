@@ -2,6 +2,10 @@ const Product = require("../models/productModel");
 const User = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
+const validateMongoDbId = require("../utils/validateMongodbId");
+const cloudinaryUploadImg = require("../utils/cloudinary");
+const fs = require("fs");
+const { syncBuiltinESMExports } = require("module");
 
 // Create a New Product
 const createProduct = asyncHandler(async (req, res) => {
@@ -186,10 +190,46 @@ const rating = asyncHandler(async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: "Internal Server Error" });
     }
-  });
-  
-  
+});
+
+const uploadImages = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    validateMongoDbId(id);
+    try {
+        if (!req.files || !req.files.length) {
+            return res.status(400).json({ message: 'No files uploaded' });
+        }
+        const uploader = (path) => cloudinaryUploadImg(path, "images");
+        const urls = [];
+        const files = req.files;
+        for (const file of files) {
+            const { path } = file;
+            const newpath = await uploader(path);
+            urls.push(newpath);
+
+            // Asynchronously delete the file
+            fs.unlink(path, (err) => {
+                if (err) {
+                    console.error('Error deleting file:', err);
+                } else {
+                    console.log('File deleted successfully');
+                }
+            });
+        }
+        const findProduct = await Product.findByIdAndUpdate(id, {
+            images: urls.map((file) => { 
+                return file;
+            }),
+        },
+        {
+            new: true,
+        });
+        res.json(findProduct);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
 
 
 
-module.exports = { createProduct, getaProduct, getAllProduct, updateProduct, deleteProduct, addToWishlist, rating };
+module.exports = { createProduct, getaProduct, getAllProduct, updateProduct, deleteProduct, addToWishlist, rating, uploadImages };
