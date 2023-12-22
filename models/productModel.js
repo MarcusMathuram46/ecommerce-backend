@@ -40,10 +40,8 @@ var productSchema = new mongoose.Schema(
             // select: false, - hide sold in api
         },
         images: [],
-        color: {
-            type:  String,
-            required: true,
-        },
+        color: [],
+        tags: [],
         ratings: [
             {
                 star: Number,

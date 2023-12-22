@@ -163,7 +163,9 @@ const dislikeBlog = asyncHandler(async (req, res) => {
     }
   });
 
-  const uploadImages = asyncHandler(async (req, res) => {
+// upload images
+
+const uploadImages = asyncHandler(async (req, res) => {
     const { id } = req.params;
     validateMongoDbId(id);
     try {

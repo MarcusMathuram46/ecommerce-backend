@@ -173,11 +173,6 @@ const saveAddress = asyncHandler(async (req, res) => {
     }
 });
 
-
-
-
-
-
 // Get all Users
 
 const getallUser = asyncHandler(async (req, res) => {
@@ -399,7 +394,7 @@ const userCart = asyncHandler(async (req, res) => {
   }
 });
 
-
+// Get user cart information
 const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
@@ -411,6 +406,7 @@ const getUserCart = asyncHandler(async (req, res) => {
   }
 });
 
+// Empty the Cart
 const emptyCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
@@ -423,6 +419,7 @@ const emptyCart = asyncHandler(async (req, res) => {
   }
 });
 
+// Apply coupon
 const applyCoupon = asyncHandler(async (req, res) => {
   const { coupon } = req.body;
   const { _id } = req.user;
@@ -485,7 +482,7 @@ const createOrder = asyncHandler(async (req, res) =>{
   }
 });
 
-
+// Get Users Orders
 const getOrders = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
@@ -497,6 +494,7 @@ const getOrders = asyncHandler(async (req, res) => {
   }
 });
 
+// Update Order Status
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
   const { id } = req.params;
